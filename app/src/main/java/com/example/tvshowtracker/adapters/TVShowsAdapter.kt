@@ -4,7 +4,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
-import androidx.databinding.library.baseAdapters.DataBinderMapperImpl
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tvshowtracker.R
 import com.example.tvshowtracker.databinding.TvShowItemBinding
