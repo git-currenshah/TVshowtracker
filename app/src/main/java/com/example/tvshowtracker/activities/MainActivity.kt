@@ -1,5 +1,6 @@
 package com.example.tvshowtracker.activities
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
@@ -10,10 +11,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.tvshowtracker.R
 import com.example.tvshowtracker.adapters.TVShowsAdapter
 import com.example.tvshowtracker.databinding.ActivityMainBinding
+import com.example.tvshowtracker.listeners.TvShowListner
 import com.example.tvshowtracker.models.TvShow
 import com.example.tvshowtracker.viewmodels.MostPopularTvShowsViewModel
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), TvShowListner {
 
     private lateinit var viewModel:MostPopularTvShowsViewModel
 
@@ -48,8 +50,7 @@ class MainActivity : AppCompatActivity() {
 
     fun doInitialization(){
         activityMainBinding.mainRecyclerView.setHasFixedSize(true)
-
-        tvShowAdapter = TVShowsAdapter(tvShows)
+        tvShowAdapter = TVShowsAdapter(tvShows, this)
         activityMainBinding.mainRecyclerView.adapter = tvShowAdapter
         viewModel = ViewModelProvider(this)[MostPopularTvShowsViewModel::class.java]
         getMostPopularTvShows()
@@ -57,7 +58,7 @@ class MainActivity : AppCompatActivity() {
 
     fun getMostPopularTvShows(){
         toggleLoading()
-        viewModel.getMostPopularTvShows(currentPage).observe(this, Observer { mostPopularTvShowsResponse ->
+        viewModel.getMostPopularTvShows(currentPage).observe(this, { mostPopularTvShowsResponse ->
 
            toggleLoading()
 
@@ -65,7 +66,7 @@ class MainActivity : AppCompatActivity() {
                 totalAvailablePages = mostPopularTvShowsResponse.totalPages
                 if (mostPopularTvShowsResponse.tvShows != null){
 
-                    var oldCount:Int = tvShows.size
+                    val oldCount:Int = tvShows.size
                     (tvShows as MutableList).addAll(mostPopularTvShowsResponse.tvShows!!)
 
                     tvShowAdapter.notifyItemRangeInserted(oldCount,tvShows.size)
@@ -90,5 +91,16 @@ class MainActivity : AppCompatActivity() {
             }
 
         }
+    }
+
+    override fun onTvShowClicked(tvShow: TvShow) {
+        val intent = Intent(applicationContext, TvShowDetails::class.java)
+        intent.putExtra("id",tvShow.id)
+        intent.putExtra("name",tvShow.name)
+        intent.putExtra("startDate",tvShow.startDate)
+        intent.putExtra("country",tvShow.country)
+        intent.putExtra("network",tvShow.network)
+        intent.putExtra("status",tvShow.status)
+        startActivity(intent)
     }
 }

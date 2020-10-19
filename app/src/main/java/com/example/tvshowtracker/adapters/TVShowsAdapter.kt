@@ -1,12 +1,14 @@
 package com.example.tvshowtracker.adapters
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.library.baseAdapters.DataBinderMapperImpl
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tvshowtracker.R
 import com.example.tvshowtracker.databinding.TvShowItemBinding
+import com.example.tvshowtracker.listeners.TvShowListner
 import com.example.tvshowtracker.models.TvShow
 
 class TVShowsAdapter(): RecyclerView.Adapter<TVShowsAdapter.TvShowViewHolder>() {
@@ -15,8 +17,11 @@ class TVShowsAdapter(): RecyclerView.Adapter<TVShowsAdapter.TvShowViewHolder>() 
 
     private var layoutInflater:LayoutInflater? = null
 
-    constructor(tvShows: List<TvShow>) : this() {
+    private lateinit var tvShowListner: TvShowListner
+
+    constructor(tvShows: List<TvShow>, tvShowListner: TvShowListner) : this() {
         this.tvShows = tvShows
+        this.tvShowListner = tvShowListner
     }
 
 
@@ -34,6 +39,9 @@ class TVShowsAdapter(): RecyclerView.Adapter<TVShowsAdapter.TvShowViewHolder>() 
 
             tvShowItemBinding.tvShow = tvShow
             tvShowItemBinding.executePendingBindings()
+            tvShowItemBinding.root.setOnClickListener( View.OnClickListener {
+                tvShowListner.onTvShowClicked(tvShow)
+            })
 
         }
 
@@ -44,7 +52,7 @@ class TVShowsAdapter(): RecyclerView.Adapter<TVShowsAdapter.TvShowViewHolder>() 
            layoutInflater = LayoutInflater.from(parent.context)
        }
 
-       var tvShowItemBinding: TvShowItemBinding = DataBindingUtil.inflate(layoutInflater!!, R.layout.tv_show_item,parent,false)
+       val tvShowItemBinding: TvShowItemBinding = DataBindingUtil.inflate(layoutInflater!!, R.layout.tv_show_item,parent,false)
 
         return TvShowViewHolder(tvShowItemBinding)
     }
